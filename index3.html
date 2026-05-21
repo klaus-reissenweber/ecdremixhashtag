@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>#ECDREMIX2026 — Subtronics × SoundCloud Remix Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#06090c;
+    --bg2:#0b1116;
+    --panel:#0e151b;
+    --panel2:#121c24;
+    --line:rgba(120,255,214,0.10);
+    --line2:rgba(120,255,214,0.20);
+    --txt:#e8f6f1;
+    --muted:#7d96a0;
+    --acid:#34ffb0;        /* primary acid green */
+    --acid-dim:#1ea97a;
+    --cyan:#38e1ff;
+    --magenta:#ff3da6;
+    --amber:#ffc24b;
+    --shadow:0 24px 60px -20px rgba(0,0,0,0.8);
+    --glow:0 0 0 1px rgba(52,255,176,0.22), 0 0 32px -8px rgba(52,255,176,0.35);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:
+      radial-gradient(1100px 600px at 88% -8%, rgba(56,225,255,0.10), transparent 60%),
+      radial-gradient(900px 520px at 5% 110%, rgba(255,61,166,0.08), transparent 55%),
+      var(--bg);
+    color:var(--txt);
+    font-family:'Sora',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:linear-gradient(rgba(52,255,176,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(52,255,176,0.025) 1px,transparent 1px);
+    background-size:46px 46px;
+    mask-image:radial-gradient(circle at 50% 30%,#000 0%,transparent 80%);
+  }
+  .wrap{position:relative;z-index:1;max-width:1320px;margin:0 auto;padding:28px 26px 80px}
+
+  /* ---------- Header ---------- */
+  header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:8px}
+  .brandblock{display:flex;align-items:center;gap:18px}
+  .eye{
+    width:54px;height:54px;flex:none;border-radius:50%;
+    background:radial-gradient(circle at 50% 50%,#06251c 0 36%,var(--acid) 37% 44%,#06251c 45% 60%,var(--acid) 61% 66%,transparent 67%);
+    box-shadow:var(--glow);position:relative;animation:pulse 3.4s ease-in-out infinite;
+  }
+  .eye::after{content:"";position:absolute;inset:0;border-radius:50%;border:1px solid var(--line2)}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 1px rgba(52,255,176,0.22),0 0 30px -10px rgba(52,255,176,0.5)}50%{box-shadow:0 0 0 1px rgba(52,255,176,0.4),0 0 46px -6px rgba(52,255,176,0.8)}}
+  .ttl h1{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:30px;letter-spacing:0.5px;line-height:1}
+  .ttl h1 .tag{color:var(--acid)}
+  .ttl p{color:var(--muted);font-size:13px;margin-top:7px;letter-spacing:0.3px}
+  .ttl p b{color:var(--cyan);font-weight:500}
+
+  .head-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .pill{
+    display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;
+    padding:8px 13px;border-radius:999px;border:1px solid var(--line2);color:var(--muted);background:rgba(255,255,255,0.015);
+    letter-spacing:0.4px;text-transform:uppercase;
+  }
+  .pill .dot{width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 10px var(--amber)}
+  .pill.live .dot{background:var(--acid);box-shadow:0 0 10px var(--acid);animation:blink 1.6s infinite}
+  @keyframes blink{50%{opacity:.35}}
+  .btn{
+    cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0.5px;text-transform:uppercase;
+    padding:9px 15px;border-radius:9px;border:1px solid var(--line2);background:rgba(52,255,176,0.06);color:var(--acid);
+    transition:.18s;white-space:nowrap;
+  }
+  .btn:hover{background:rgba(52,255,176,0.14);box-shadow:var(--glow)}
+  .btn.ghost{color:var(--muted);background:transparent;border-color:var(--line)}
+  .btn.ghost:hover{color:var(--txt);border-color:var(--line2);box-shadow:none}
+
+  /* ---------- Tabs ---------- */
+  .tabs{display:flex;gap:6px;margin:26px 0 22px;border-bottom:1px solid var(--line);padding-bottom:0}
+  .tab{
+    cursor:pointer;font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:14.5px;letter-spacing:0.4px;
+    padding:13px 22px;color:var(--muted);position:relative;display:flex;align-items:center;gap:10px;transition:.18s;
+    border:1px solid transparent;border-bottom:none;border-radius:10px 10px 0 0;
+  }
+  .tab:hover{color:var(--txt)}
+  .tab.active{color:var(--txt);background:linear-gradient(180deg,rgba(52,255,176,0.07),transparent)}
+  .tab.active::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--acc,var(--acid));box-shadow:0 0 14px var(--acc,var(--acid))}
+  .tab .ic{width:18px;height:18px;opacity:.9}
+  .tab[data-tab="instagram"]{--acc:var(--magenta)}
+  .tab[data-tab="tiktok"]{--acc:var(--cyan)}
+  .tab[data-tab="x"]{--acc:var(--txt)}
+  .tab[data-tab="youtube"]{--acc:#ff4d4d}
+  .tab[data-tab="overview"]{--acc:var(--acid)}
+  /* overview-specific */
+  .ov-share{display:flex;flex-direction:column;gap:11px}
+  .ov-metric{padding:11px 13px;border-radius:12px;background:rgba(255,255,255,0.018);border:1px solid var(--line)}
+  .ov-metric .top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+  .ov-metric .top .ml{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.6px;text-transform:uppercase;color:var(--muted)}
+  .ov-metric .top .mv{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:18px}
+  .ov-metric .lead-plat{font-size:11px;color:var(--muted);margin-top:7px}
+  .ov-metric .lead-plat b{color:var(--acid);font-weight:600}
+  .ov-bar{height:9px;border-radius:6px;background:rgba(255,255,255,0.05);display:flex;overflow:hidden}
+  .ov-bar span{height:100%;display:block}
+  .ov-legend{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:11px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)}
+  .ov-legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:middle}
+  .plat-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
+  .plat-card{padding:15px 16px;border-radius:14px;background:linear-gradient(165deg,var(--panel2),var(--panel));border:1px solid var(--line);position:relative;overflow:hidden}
+  .plat-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--pc,var(--acid))}
+  .plat-card h4{font-family:'Chakra Petch',sans-serif;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;margin-bottom:3px}
+  .plat-card .st{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:11px}
+  .plat-card .pstats{display:flex;flex-wrap:wrap;gap:5px 14px;font-size:12px}
+  .plat-card .pstats div span{font-family:'IBM Plex Mono',monospace;color:var(--txt);font-weight:600}
+  .plat-card .pstats div small{color:var(--muted);font-size:10px;display:block}
+  .plat-card .notable{margin-top:11px;padding-top:10px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.45}
+  .plat-card .notable b{color:var(--txt);font-weight:500}
+  .plat-card.quiet{opacity:.6}
+  @media(max-width:1000px){.plat-strip{grid-template-columns:1fr}}
+
+  .view{display:none;animation:fade .45s ease both}
+  .view.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  /* ---------- KPI grid ---------- */
+  .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:22px}
+  .kpi{
+    background:linear-gradient(160deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:15px;
+    padding:17px 17px 16px;position:relative;overflow:hidden;box-shadow:var(--shadow);
+  }
+  .kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--kc,var(--acid));opacity:.85}
+  .kpi .lab{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.9px;text-transform:uppercase;color:var(--muted)}
+  .kpi .val{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:27px;margin-top:9px;line-height:1;letter-spacing:0.5px}
+  .kpi .sub{font-size:11px;color:var(--muted);margin-top:7px;display:flex;align-items:center;gap:5px}
+  .kpi .sub .up{color:var(--acid)}
+  .kpi.q{cursor:help}
+  .kpi .qmark{position:absolute;top:12px;right:13px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);
+    border:1px solid var(--line2);width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+
+  /* ---------- Panels ---------- */
+  .grid{display:grid;gap:16px}
+  .g-2{grid-template-columns:1.55fr 1fr}
+  .g-2b{grid-template-columns:1fr 1fr}
+  .panel{
+    background:linear-gradient(170deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:16px;
+    padding:18px 19px;box-shadow:var(--shadow);position:relative;
+  }
+  .panel h3{font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:15px;letter-spacing:0.4px;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px}
+  .panel h3 .hint{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);font-weight:400;letter-spacing:0.3px;text-transform:uppercase}
+  .panel .cap{font-size:11.5px;color:var(--muted);margin-bottom:14px}
+  .chartbox{position:relative;height:248px}
+  .chartbox.tall{height:300px}
+
+  /* ---------- Leaderboard / table ---------- */
+  .lead{display:flex;flex-direction:column;gap:9px;margin-top:6px}
+  .row{display:grid;grid-template-columns:26px 1fr auto;align-items:center;gap:12px;padding:9px 11px;border-radius:11px;background:rgba(255,255,255,0.018);border:1px solid var(--line);transition:.16s}
+  .row:hover{border-color:var(--line2);background:rgba(52,255,176,0.05)}
+  .row .rank{font-family:'Chakra Petch',sans-serif;font-weight:700;color:var(--muted);font-size:15px;text-align:center}
+  .row:nth-child(1) .rank{color:var(--amber)}
+  .row .meta{min-width:0}
+  .row .t{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .row .a{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);margin-top:2px}
+  .row .stat{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--acid);text-align:right;white-space:nowrap}
+  .row .stat span{display:block;font-size:9.5px;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase}
+  [data-tab-target] .row .stat{color:var(--acid)}
+
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  thead th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.6px;text-transform:uppercase;color:var(--muted);
+    padding:9px 10px;border-bottom:1px solid var(--line2);cursor:pointer;user-select:none;white-space:nowrap}
+  thead th:hover{color:var(--txt)}
+  thead th.num,tbody td.num{text-align:right;font-family:'IBM Plex Mono',monospace}
+  tbody td{padding:10px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+  tbody tr:hover{background:rgba(52,255,176,0.04)}
+  tbody td a{color:var(--cyan);text-decoration:none}
+  tbody td a:hover{text-decoration:underline}
+  .tname{max-width:330px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .badge{font-family:'IBM Plex Mono',monospace;font-size:9.5px;padding:2px 7px;border-radius:5px;border:1px solid var(--line2);color:var(--muted);text-transform:uppercase;letter-spacing:0.4px}
+  .badge.reel{color:var(--magenta);border-color:rgba(255,61,166,0.4)}
+  .badge.video{color:var(--cyan);border-color:rgba(56,225,255,0.4)}
+
+  .scroll{max-height:430px;overflow:auto}
+  .scroll::-webkit-scrollbar{width:9px;height:9px}
+  .scroll::-webkit-scrollbar-thumb{background:rgba(52,255,176,0.18);border-radius:8px}
+  .scroll::-webkit-scrollbar-track{background:transparent}
+
+  /* ---------- Notice / disclaimers ---------- */
+  .notice{display:flex;gap:11px;align-items:flex-start;background:rgba(255,194,75,0.06);border:1px solid rgba(255,194,75,0.28);
+    border-radius:13px;padding:13px 15px;margin-bottom:20px;font-size:12.5px;color:#ffe7b3;line-height:1.5}
+  .notice b{color:var(--amber)}
+  .notice .ic{flex:none;color:var(--amber);font-size:16px;margin-top:1px}
+
+  footer{margin-top:34px;text-align:center;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.4px}
+  footer a{color:var(--acid-dim);text-decoration:none}
+
+  /* ---------- Modal ---------- */
+  .overlay{position:fixed;inset:0;background:rgba(3,6,8,0.78);backdrop-filter:blur(6px);z-index:50;display:none;align-items:center;justify-content:center;padding:24px}
+  .overlay.show{display:flex}
+  .modal{width:100%;max-width:560px;background:linear-gradient(170deg,var(--panel2),var(--panel));border:1px solid var(--line2);border-radius:18px;box-shadow:var(--shadow);padding:24px 24px 22px}
+  .modal h2{font-family:'Chakra Petch',sans-serif;font-size:19px;font-weight:700;display:flex;align-items:center;gap:10px}
+  .modal p{font-size:12.5px;color:var(--muted);margin:9px 0 16px;line-height:1.55}
+  .modal label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.6px;text-transform:uppercase;color:var(--cyan);display:block;margin:14px 0 6px}
+  .modal input,.modal textarea{width:100%;background:var(--bg2);border:1px solid var(--line2);border-radius:10px;color:var(--txt);
+    font-family:'IBM Plex Mono',monospace;font-size:12px;padding:11px 12px;resize:vertical}
+  .modal textarea{min-height:90px}
+  .modal .acts{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+  .modal .small{font-size:11px;color:var(--muted);margin-top:10px;line-height:1.5}
+  .modal .small code{color:var(--acid);background:rgba(52,255,176,0.08);padding:1px 5px;border-radius:4px;font-size:10.5px}
+
+  @media(max-width:1000px){.kpis{grid-template-columns:repeat(3,1fr)}.g-2,.g-2b{grid-template-columns:1fr}}
+  @media(max-width:560px){.kpis{grid-template-columns:repeat(2,1fr)}.wrap{padding:20px 14px 60px}.ttl h1{font-size:23px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brandblock">
+      <div class="eye"></div>
+      <div class="ttl">
+        <h1>REMIX TRACKER <span class="tag">#ECDREMIX2026</span></h1>
+        <p>Subtronics × SoundCloud remix competition · <b>Red Light Creative</b> campaign monitor</p>
+      </div>
+    </div>
+    <div class="head-right">
+      <span class="pill" id="srcPill"><span class="dot"></span><span id="srcLabel">Sample data</span></span>
+      <span class="pill" id="updPill"><span class="dot" style="background:var(--cyan);box-shadow:0 0 10px var(--cyan)"></span><span id="updLabel">—</span></span>
+      <button class="btn" id="openCfg">⚙ Connect data</button>
+      <button class="btn ghost" id="refreshBtn">↻ Refresh</button>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="overview">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+      Overview
+    </div>
+    <div class="tab" data-tab="soundcloud">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 14v3M6 11v6M9 9v8M12 7v10"/><path d="M15 8a4 4 0 0 1 4 4v0a3 3 0 0 1-3 3h-4V8.5"/></svg>
+      SoundCloud · Contest Hub
+    </div>
+    <div class="tab" data-tab="instagram">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+      Instagram · Hashtag Buzz
+    </div>
+    <div class="tab" data-tab="tiktok">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12a4 4 0 1 0 4 4V4c1 2 2.5 3 5 3"/></svg>
+      TikTok · Hashtag
+    </div>
+    <div class="tab" data-tab="x">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4l16 16M20 4L4 20"/></svg>
+      X · Mentions
+    </div>
+    <div class="tab" data-tab="youtube">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="4"/><path d="M10 9l5 3-5 3z" fill="currentColor"/></svg>
+      YouTube · Search
+    </div>
+  </div>
+
+  <!-- ============ OVERVIEW ============ -->
+  <section class="view active" id="view-overview" data-tab-target>
+    <div class="kpis" id="ov-kpis"></div>
+    <div class="grid g-2" style="margin-bottom:16px">
+      <div class="panel">
+        <h3>Which platform owns each metric <span class="hint">share of total</span></h3>
+        <div class="cap">Every campaign metric, totalled across platforms, with the platform driving the majority share called out. Reach combines real view/play counts where platforms expose them plus a labelled estimate for Instagram — never claimed as “impressions,” which no platform publishes.</div>
+        <div class="ov-share" id="ovShare"></div>
+        <div class="ov-legend" id="ovLegend"></div>
+      </div>
+      <div class="panel">
+        <h3>Reach by platform <span class="hint">total views / plays / est.</span></h3>
+        <div class="cap">Where the contest's audience actually is.</div>
+        <div class="chartbox tall"><canvas id="ovReach"></canvas></div>
+      </div>
+    </div>
+    <div class="panel" style="margin-bottom:16px">
+      <h3>Per-platform snapshot <span class="hint">high-level + notable mentions</span></h3>
+      <div class="cap">Each platform at a glance, with caveats stated plainly. Tap a platform's own tab for full detail.</div>
+      <div class="plat-strip" id="ovStrip"></div>
+    </div>
+    <div class="notice">
+      <span class="ic">●</span>
+      <div><b>Reddit:</b> monitored, no #ECDREMIX2026 activity found (sitewide search + manual check). <b>Instagram:</b> free-tier scrape capped at ~21 posts — a sample, not a full count. <b>Reach figures</b> are real where platforms expose views/plays; Instagram reach is an engagement-based estimate. All data is a snapshot from the last scrape, not live.</div>
+    </div>
+  </section>
+
+  <!-- ============ SOUNDCLOUD ============ -->
+  <section class="view" id="view-soundcloud" data-tab-target>
+    <div class="kpis" id="sc-kpis"></div>
+    <div class="grid g-2" style="margin-bottom:16px">
+      <div class="panel">
+        <h3>Submissions &amp; plays over time <span class="hint">cumulative</span></h3>
+        <div class="cap">New remix uploads tagged #ECDREMIX2026 and cumulative plays accrued across the contest window.</div>
+        <div class="chartbox tall"><canvas id="scTime"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Top remixes <span class="hint">by plays</span></h3>
+        <div class="cap">The leaderboard your judges and socials will care about most.</div>
+        <div class="lead" id="scLead"></div>
+      </div>
+    </div>
+    <div class="grid g-2b" style="margin-bottom:16px">
+      <div class="panel">
+        <h3>Engagement mix <span class="hint">likes · reposts · comments</span></h3>
+        <div class="chartbox"><canvas id="scMix"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Daily upload volume <span class="hint">submissions / day</span></h3>
+        <div class="chartbox"><canvas id="scDaily"></canvas></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>All submissions <span class="hint" id="scCount"></span></h3>
+      <div class="cap">Click any column header to sort. Track titles link to SoundCloud.</div>
+      <div class="scroll"><table id="scTable"><thead></thead><tbody></tbody></table></div>
+    </div>
+  </section>
+
+  <!-- ============ INSTAGRAM ============ -->
+  <section class="view" id="view-instagram" data-tab-target style="--acid:var(--magenta)">
+    <div class="notice">
+      <span class="ic">●</span>
+      <div><b>About “impressions.”</b> Instagram does not expose true impression counts for hashtags through any public source — that data is owner-only. The card below shows <b>Estimated Reach</b>, a transparent heuristic (total engagement × an adjustable factor) clearly labelled as an estimate. Every other number here is a real, scraped value.</div>
+    </div>
+    <div class="kpis" id="ig-kpis"></div>
+    <div class="grid g-2" style="margin-bottom:16px">
+      <div class="panel">
+        <h3>Posts &amp; engagement over time <span class="hint">daily</span></h3>
+        <div class="cap">Volume of posts tagged #ECDREMIX2026 and the engagement (likes + comments) they pulled per day.</div>
+        <div class="chartbox tall"><canvas id="igTime"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Top creators <span class="hint">by engagement</span></h3>
+        <div class="cap">Accounts driving the most reaction to the campaign.</div>
+        <div class="lead" id="igLead"></div>
+      </div>
+    </div>
+    <div class="grid g-2b" style="margin-bottom:16px">
+      <div class="panel">
+        <h3>Content type split <span class="hint">reel · video · image</span></h3>
+        <div class="chartbox"><canvas id="igType"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Reel plays vs static engagement <span class="hint">format performance</span></h3>
+        <div class="chartbox"><canvas id="igFormat"></canvas></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>All posts <span class="hint" id="igCount"></span></h3>
+      <div class="cap">Click any column header to sort. Post links open Instagram.</div>
+      <div class="scroll"><table id="igTable"><thead></thead><tbody></tbody></table></div>
+    </div>
+  </section>
+
+  <!-- ============ TIKTOK ============ -->
+  <section class="view" id="view-tiktok" data-tab-target style="--acid:var(--cyan)">
+    <div class="notice">
+      <span class="ic">●</span>
+      <div><b>Strict tag filter on.</b> TikTok pads thin hashtag feeds with algorithmically “related” videos, so a raw scrape pulls in posts that don’t actually use the tag. This tab counts <b>only videos whose caption genuinely contains #ECDREMIX2026</b> — the filtered-out count is shown so you can see how much was discarded.</div>
+    </div>
+    <div class="kpis" id="tt-kpis"></div>
+    <div class="grid g-2" style="margin-bottom:16px">
+      <div class="panel">
+        <h3>Posts &amp; views over time <span class="hint">cumulative</span></h3>
+        <div class="cap">Verified #ECDREMIX2026 videos uploaded and cumulative views accrued.</div>
+        <div class="chartbox tall"><canvas id="ttTime"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Top videos <span class="hint">by views</span></h3>
+        <div class="cap">The breakout TikToks driving the contest.</div>
+        <div class="lead" id="ttLead"></div>
+      </div>
+    </div>
+    <div class="grid g-2b" style="margin-bottom:16px">
+      <div class="panel">
+        <h3>Engagement mix <span class="hint">likes · shares · comments</span></h3>
+        <div class="chartbox"><canvas id="ttMix"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Daily upload volume <span class="hint">videos / day</span></h3>
+        <div class="chartbox"><canvas id="ttDaily"></canvas></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>All verified videos <span class="hint" id="ttCount"></span></h3>
+      <div class="cap">Click any column header to sort. Links open TikTok.</div>
+      <div class="scroll"><table id="ttTable"><thead></thead><tbody></tbody></table></div>
+    </div>
+  </section>
+
+  <!-- ============ X / TWITTER ============ -->
+  <section class="view" id="view-x" data-tab-target style="--acid:var(--txt)">
+    <div class="notice">
+      <span class="ic">●</span>
+      <div><b>Strict tag filter on.</b> Only tweets whose text genuinely contains #ECDREMIX2026 are counted; off-tag search results are discarded. X has no public impression data for searches, so the reach figure below is a labelled estimate — every other number is real and scraped.</div>
+    </div>
+    <div class="kpis" id="x-kpis"></div>
+    <div class="grid g-2" style="margin-bottom:16px">
+      <div class="panel">
+        <h3>Tweets &amp; engagement over time <span class="hint">daily</span></h3>
+        <div class="cap">Volume of #ECDREMIX2026 tweets and the engagement (likes + retweets + replies) per day.</div>
+        <div class="chartbox tall"><canvas id="xTime"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Top tweets <span class="hint">by engagement</span></h3>
+        <div class="cap">The posts pushing the contest furthest.</div>
+        <div class="lead" id="xLead"></div>
+      </div>
+    </div>
+    <div class="grid g-2b" style="margin-bottom:16px">
+      <div class="panel">
+        <h3>Engagement mix <span class="hint">likes · retweets · replies</span></h3>
+        <div class="chartbox"><canvas id="xMix"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Daily tweet volume <span class="hint">tweets / day</span></h3>
+        <div class="chartbox"><canvas id="xDaily"></canvas></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>All verified tweets <span class="hint" id="xCount"></span></h3>
+      <div class="cap">Click any column header to sort. Links open the tweet.</div>
+      <div class="scroll"><table id="xTable"><thead></thead><tbody></tbody></table></div>
+    </div>
+  </section>
+
+  <!-- ============ YOUTUBE ============ -->
+  <section class="view" id="view-youtube" data-tab-target style="--acid:#ff4d4d">
+    <div class="notice">
+      <span class="ic">●</span>
+      <div><b>Strict tag filter on.</b> YouTube has no hashtag feed — this is a keyword search of titles and descriptions, so it returns drift. Only videos whose title or description genuinely contains #ECDREMIX2026 are counted; the rest are discarded and tallied below.</div>
+    </div>
+    <div class="kpis" id="yt-kpis"></div>
+    <div class="grid g-2" style="margin-bottom:16px">
+      <div class="panel">
+        <h3>Uploads &amp; views over time <span class="hint">cumulative</span></h3>
+        <div class="cap">Verified #ECDREMIX2026 videos uploaded and cumulative views accrued.</div>
+        <div class="chartbox tall"><canvas id="ytTime"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Top videos <span class="hint">by views</span></h3>
+        <div class="cap">The contest's biggest YouTube uploads.</div>
+        <div class="lead" id="ytLead"></div>
+      </div>
+    </div>
+    <div class="grid g-2b" style="margin-bottom:16px">
+      <div class="panel">
+        <h3>Likes vs comments <span class="hint">top videos</span></h3>
+        <div class="chartbox"><canvas id="ytMix"></canvas></div>
+      </div>
+      <div class="panel">
+        <h3>Daily upload volume <span class="hint">videos / day</span></h3>
+        <div class="chartbox"><canvas id="ytDaily"></canvas></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>All verified videos <span class="hint" id="ytCount"></span></h3>
+      <div class="cap">Click any column header to sort. Links open YouTube.</div>
+      <div class="scroll"><table id="ytTable"><thead></thead><tbody></tbody></table></div>
+    </div>
+  </section>
+
+  <footer>
+    Built for Red Light Creative · data via Apify public datasets · reach figures are estimates, not Instagram impressions ·
+    <a id="howto" href="#">how to connect live data</a>
+  </footer>
+</div>
+
+<!-- ============ CONFIG MODAL ============ -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2>⚙ Connect live data</h2>
+    <p>Paste your Apify <b>public dataset URL</b> for each platform. Make the dataset public in Apify (Storage → dataset → Settings → “Anyone with the link”) so the token never has to live in this file. Schedule the scraper to refresh it.</p>
+
+    <label>SoundCloud dataset URL</label>
+    <input id="cfgSc" placeholder="https://api.apify.com/v2/datasets/XXXX/items?clean=true&format=json">
+
+    <label>Instagram dataset URL (posts run)</label>
+    <input id="cfgIg" placeholder="https://api.apify.com/v2/datasets/YYYY/items?clean=true&format=json">
+
+    <label>Instagram dataset URL #2 (reels run — optional)</label>
+    <input id="cfgIg2" placeholder="paste reels-mode dataset URL; merged with the posts run">
+
+    <label>Or paste raw JSON manually (overrides URL — useful if the embed sandbox blocks fetch)</label>
+    <textarea id="cfgJson" placeholder='{"soundcloud":[...], "instagram":[...]}'></textarea>
+
+    <label>Est. reach factor (engagement × N)</label>
+    <input id="cfgFactor" placeholder="12">
+
+    <div class="small">No fetch happening? Some embed sandboxes block outside requests. Either paste raw JSON above, or download this file and open it locally / host it where <code>fetch()</code> is allowed.</div>
+
+    <div class="acts">
+      <button class="btn ghost" id="cfgCancel">Cancel</button>
+      <button class="btn" id="cfgSave">Save &amp; load</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================================
+   CONFIG  — paste Apify PUBLIC dataset URLs here, or via the ⚙ button.
+   Leave blank to run on bundled sample data.
+   ========================================================================= */
+const CONFIG = {
+  hashtag: "#ECDREMIX2026",
+  soundcloudUrl: "https://api.apify.com/v2/datasets/bs2vBgkvSGicbCkcu/items?clean=true&format=json",
+  instagramUrl:  "https://api.apify.com/v2/datasets/Sk0kQ2WGCVhMwkaYL/items?clean=true&format=json",  // posts run
+  instagramUrl2: "https://api.apify.com/v2/datasets/si62XrJvgFZWaEgXo/items?clean=true&format=json",  // reels run — merged + de-duped with posts run
+  tiktokUrl:     "https://api.apify.com/v2/datasets/6BEcks3ZjOTyHK2hr/items?clean=true&format=json",
+  xUrl:          "https://api.apify.com/v2/datasets/MppZMHBSP5dP5YTxR/items?clean=true&format=json",
+  youtubeUrl:    "https://api.apify.com/v2/datasets/JhqiJfEqwqLEG0mKe/items?clean=true&format=json",
+  tagFilter:     "ecdremix2026",  // lowercase; captions/tweets must contain this to count
+  estReachFactor: 12
+};
+
+/* =========================================================================
+   FIELD NORMALIZERS
+   Apify actors name fields differently between versions, so we read from a
+   list of likely keys for each metric. Add keys here if your actor differs.
+   ========================================================================= */
+const pick = (o, keys, d=0) => { for (const k of keys){ const v=k.split('.').reduce((x,p)=>x&&x[p],o); if(v!==undefined&&v!==null&&v!=='') return v; } return d; };
+const num  = v => { if(typeof v==='number') return v; if(typeof v==='string'){ const n=parseFloat(v.replace(/[, ]/g,'')); return isNaN(n)?0:n;} return 0; };
+
+function normSoundcloud(raw){
+  return raw.map(o=>({
+    title:  pick(o,['title','trackTitle','name'],'Untitled'),
+    artist: pick(o,['username','artist','user.username','author','publisher'],'unknown'),
+    url:    pick(o,['url','permalink','permalink_url','trackUrl'],'#'),
+    plays:  num(pick(o,['playCount','plays','playback_count','play_count'])),
+    likes:  num(pick(o,['likes','likesCount','likeCount','favoritings','likes_count'])),
+    reposts:num(pick(o,['reposts','repostsCount','reposts_count','repostCount'])),
+    comments:num(pick(o,['comments','commentCount','commentsCount','comment_count'])),
+    date:   pick(o,['createdAt','uploadDate','created_at','date','timestamp'],null)
+  }));
+}
+function normInstagram(raw){
+  return raw.map(o=>{
+    const type = String(pick(o,['type','productType','mediaType'],'Image'));
+    const isReel = /reel|clip/i.test(type) || pick(o,['videoViewCount','videoPlayCount'],0)>0 && /video/i.test(type);
+    return {
+      caption: pick(o,['caption','text','title'],''),
+      creator: pick(o,['ownerUsername','username','owner.username','author'],'unknown'),
+      url:     pick(o,['url','postUrl','permalink','shortCodeUrl'],'#'),
+      likes:   num(pick(o,['likesCount','likes','likeCount','like_count'])),
+      comments:num(pick(o,['commentsCount','comments','commentCount','comment_count'])),
+      plays:   num(pick(o,['videoViewCount','videoPlayCount','plays','views','playCount'])),
+      type:    /reel|clip/i.test(type)?'Reel':(/video/i.test(type)?'Video':'Image'),
+      date:    pick(o,['timestamp','takenAt','date','createdAt'],null)
+    };
+  });
+}
+// Tracks how many TikTok rows were discarded by the strict tag filter (for the notice/KPI).
+let TT_FILTERED = 0;
+function normTiktok(raw){
+  const mapped = raw.map(o=>({
+    caption: pick(o,['text','caption','desc','description','title'],''),
+    creator: pick(o,['authorMeta.name','author.uniqueId','authorMeta.nickName','author.name','authorName','username','author'],'unknown'),
+    url:     pick(o,['webVideoUrl','url','videoUrl','postPage','shareUrl'],'#'),
+    plays:   num(pick(o,['playCount','views','viewCount','plays','stats.playCount'])),
+    likes:   num(pick(o,['diggCount','likes','likeCount','heartCount','stats.diggCount'])),
+    shares:  num(pick(o,['shareCount','shares','stats.shareCount'])),
+    comments:num(pick(o,['commentCount','comments','stats.commentCount'])),
+    date:    pick(o,['createTimeISO','createTime','timestamp','date','createdAt'],null)
+  }));
+  // STRICT FILTER: keep only videos whose caption actually contains the contest tag.
+  const tag = (CONFIG.tagFilter||'').toLowerCase();
+  const kept = mapped.filter(v => (v.caption||'').toLowerCase().includes(tag));
+  TT_FILTERED = mapped.length - kept.length;
+  return kept;
+}
+let X_FILTERED = 0;
+function normX(raw){
+  const mapped = raw.map(o=>({
+    caption: pick(o,['text','full_text','tweetText','content'],''),
+    creator: pick(o,['author.userName','author.username','username','user.screen_name','authorUsername','handle'],'unknown'),
+    url:     pick(o,['url','tweetUrl','twitterUrl','permalink'],'#'),
+    likes:   num(pick(o,['likeCount','favoriteCount','likes','favorite_count','stats.likeCount'])),
+    retweets:num(pick(o,['retweetCount','retweets','retweet_count','stats.retweetCount'])),
+    replies: num(pick(o,['replyCount','replies','reply_count','stats.replyCount'])),
+    views:   num(pick(o,['viewCount','views','impressions','view_count'])),
+    date:    pick(o,['createdAt','created_at','date','timestamp'],null)
+  }));
+  const tag = (CONFIG.tagFilter||'').toLowerCase();
+  const kept = mapped.filter(v => (v.caption||'').toLowerCase().includes(tag));
+  X_FILTERED = mapped.length - kept.length;
+  return kept;
+}
+let YT_FILTERED = 0;
+function normYoutube(raw){
+  const mapped = raw.map(o=>({
+    title:   pick(o,['title','videoTitle','name'],'Untitled'),
+    desc:    pick(o,['text','description','descriptionText'],''),
+    creator: pick(o,['channelName','channelTitle','author','channel.name','channelUsername'],'unknown'),
+    url:     pick(o,['url','videoUrl','watchUrl'],'#'),
+    views:   num(pick(o,['viewCount','views','numberOfViews','stats.viewCount'])),
+    likes:   num(pick(o,['likes','likeCount','numberOfLikes'])),
+    comments:num(pick(o,['commentsCount','commentCount','numberOfComments'])),
+    date:    pick(o,['date','uploadDate','publishedAt','createdAt','timestamp'],null)
+  }));
+  const tag = (CONFIG.tagFilter||'').toLowerCase();
+  // YouTube tags live in title OR description, so check both.
+  const kept = mapped.filter(v => ((v.title||'')+' '+(v.desc||'')).toLowerCase().includes(tag));
+  YT_FILTERED = mapped.length - kept.length;
+  return kept;
+}
+
+/* =========================================================================
+   SAMPLE DATA  (clearly fake; replaced the moment real data loads)
+   ========================================================================= */
+const day = (d)=>`2026-04-${String(d).padStart(2,'0')}T12:00:00Z`;
+const SAMPLE = {
+  soundcloud: [
+    {title:"Subtronics - Scream Saver (Wubzilla Flip) #ECDREMIX2026",username:"wubzilla",url:"#",playCount:8420,likes:712,reposts:188,comments:96,createdAt:day(2)},
+    {title:"Scream Saver (NEUROVOID Remix) [#ECDREMIX2026]",username:"neurovoid",url:"#",playCount:6310,likes:540,reposts:142,comments:71,createdAt:day(3)},
+    {title:"SCREAM SAVER — bass_gremlin remix #ECDREMIX2026",username:"bass_gremlin",url:"#",playCount:5980,likes:498,reposts:130,comments:63,createdAt:day(3)},
+    {title:"Subtronics Scream Saver (HALCYON DUB) #ECDREMIX2026",username:"halcyon.dub",url:"#",playCount:5210,likes:455,reposts:121,comments:58,createdAt:day(5)},
+    {title:"scream saver flip (lo-fi riddim) #ECDREMIX2026",username:"crimsonwub",url:"#",playCount:4730,likes:402,reposts:99,comments:44,createdAt:day(6)},
+    {title:"SCREAM SAVER VIP edit — VEXLR #ECDREMIX2026",username:"vexlr",url:"#",playCount:4115,likes:361,reposts:90,comments:40,createdAt:day(7)},
+    {title:"Scream Saver (Tearout Mix) #ECDREMIX2026",username:"sub.morph",url:"#",playCount:3680,likes:300,reposts:77,comments:33,createdAt:day(8)},
+    {title:"scream saver (deep dub rework) #ECDREMIX2026",username:"oortcloud",url:"#",playCount:3120,likes:266,reposts:69,comments:29,createdAt:day(9)},
+    {title:"SCREAM SAVER — ghoulwave remix #ECDREMIX2026",username:"ghoulwave",url:"#",playCount:2890,likes:241,reposts:60,comments:26,createdAt:day(10)},
+    {title:"Scream Saver (color bass edit) #ECDREMIX2026",username:"prismatik",url:"#",playCount:2540,likes:213,reposts:52,comments:22,createdAt:day(11)},
+    {title:"scream saver halftime flip #ECDREMIX2026",username:"lowend.kid",url:"#",playCount:2210,likes:188,reposts:47,comments:19,createdAt:day(12)},
+    {title:"SCREAM SAVER (DnB bootleg) #ECDREMIX2026",username:"velocity.b",url:"#",playCount:1980,likes:160,reposts:41,comments:16,createdAt:day(13)},
+    {title:"scream saver — first try lol #ECDREMIX2026",username:"newbie.bass",url:"#",playCount:1410,likes:121,reposts:30,comments:14,createdAt:day(14)},
+    {title:"Scream Saver (melodic dubstep) #ECDREMIX2026",username:"auroral",url:"#",playCount:1320,likes:113,reposts:28,comments:12,createdAt:day(15)},
+    {title:"SCREAM SAVER trap remix #ECDREMIX2026",username:"808church",url:"#",playCount:1180,likes:97,reposts:24,comments:10,createdAt:day(16)},
+    {title:"scream saver (experimental) #ECDREMIX2026",username:"glitchmonk",url:"#",playCount:960,likes:80,reposts:19,comments:8,createdAt:day(17)},
+    {title:"Scream Saver wonky flip #ECDREMIX2026",username:"wonk.unit",url:"#",playCount:820,likes:66,reposts:16,comments:7,createdAt:day(18)},
+    {title:"SCREAM SAVER — quick bootleg #ECDREMIX2026",username:"midnight.fm",url:"#",playCount:710,likes:58,reposts:13,comments:5,createdAt:day(19)},
+    {title:"scream saver dub (wip) #ECDREMIX2026",username:"subterra",url:"#",playCount:540,likes:44,reposts:10,comments:4,createdAt:day(20)},
+    {title:"Scream Saver (my first remix!) #ECDREMIX2026",username:"freshcut",url:"#",playCount:430,likes:38,reposts:8,comments:4,createdAt:day(21)},
+    {title:"SCREAM SAVER ambient rework #ECDREMIX2026",username:"slowtide",url:"#",playCount:360,likes:31,reposts:6,comments:3,createdAt:day(22)},
+    {title:"scream saver hardcore edit #ECDREMIX2026",username:"raveghost",url:"#",playCount:290,likes:24,reposts:5,comments:2,createdAt:day(23)},
+    {title:"Scream Saver (lofi chill) #ECDREMIX2026",username:"teacup.bass",url:"#",playCount:210,likes:18,reposts:4,comments:2,createdAt:day(24)},
+    {title:"SCREAM SAVER — submitted! #ECDREMIX2026",username:"lastminute",url:"#",playCount:140,likes:12,reposts:3,comments:1,createdAt:day(25)}
+  ],
+  instagram: [
+    {ownerUsername:"wubzilla",type:"Reel",likesCount:1840,commentsCount:96,videoViewCount:42100,url:"#",caption:"my #ECDREMIX2026 entry is LIVE 🔊",timestamp:day(2)},
+    {ownerUsername:"subtronics",type:"Reel",likesCount:14200,commentsCount:880,videoViewCount:331000,url:"#",caption:"the remixes are INSANE. keep em coming #ECDREMIX2026",timestamp:day(4)},
+    {ownerUsername:"neurovoid",type:"Reel",likesCount:990,commentsCount:54,videoViewCount:21800,url:"#",caption:"15 sec preview of my flip #ECDREMIX2026",timestamp:day(3)},
+    {ownerUsername:"bass_gremlin",type:"Video",likesCount:760,commentsCount:41,videoViewCount:15400,url:"#",caption:"studio clip #ECDREMIX2026",timestamp:day(3)},
+    {ownerUsername:"halcyon.dub",type:"Reel",likesCount:640,commentsCount:33,videoViewCount:12900,url:"#",caption:"dub version teaser #ECDREMIX2026",timestamp:day(5)},
+    {ownerUsername:"crimsonwub",type:"Image",likesCount:410,commentsCount:22,videoViewCount:0,url:"#",caption:"cover art for my entry #ECDREMIX2026",timestamp:day(6)},
+    {ownerUsername:"vexlr",type:"Reel",likesCount:580,commentsCount:29,videoViewCount:11200,url:"#",caption:"VIP edit snippet #ECDREMIX2026",timestamp:day(7)},
+    {ownerUsername:"soundcloud",type:"Image",likesCount:2200,commentsCount:140,videoViewCount:0,url:"#",caption:"Repost: the #ECDREMIX2026 contest is heating up",timestamp:day(7)},
+    {ownerUsername:"sub.morph",type:"Reel",likesCount:330,commentsCount:18,videoViewCount:7100,url:"#",caption:"tearout mix wip #ECDREMIX2026",timestamp:day(8)},
+    {ownerUsername:"oortcloud",type:"Video",likesCount:260,commentsCount:14,videoViewCount:5400,url:"#",caption:"deep dub rework #ECDREMIX2026",timestamp:day(9)},
+    {ownerUsername:"ghoulwave",type:"Reel",likesCount:300,commentsCount:16,videoViewCount:6800,url:"#",caption:"spooky remix energy #ECDREMIX2026",timestamp:day(10)},
+    {ownerUsername:"prismatik",type:"Image",likesCount:190,commentsCount:9,videoViewCount:0,url:"#",caption:"color bass vibes #ECDREMIX2026",timestamp:day(11)},
+    {ownerUsername:"lowend.kid",type:"Reel",likesCount:240,commentsCount:11,videoViewCount:5100,url:"#",caption:"halftime flip preview #ECDREMIX2026",timestamp:day(12)},
+    {ownerUsername:"velocity.b",type:"Video",likesCount:170,commentsCount:8,videoViewCount:3300,url:"#",caption:"dnb bootleg clip #ECDREMIX2026",timestamp:day(13)},
+    {ownerUsername:"auroral",type:"Reel",likesCount:210,commentsCount:10,videoViewCount:4400,url:"#",caption:"melodic side of the contest #ECDREMIX2026",timestamp:day(15)},
+    {ownerUsername:"808church",type:"Image",likesCount:130,commentsCount:6,videoViewCount:0,url:"#",caption:"trap remix artwork #ECDREMIX2026",timestamp:day(16)},
+    {ownerUsername:"glitchmonk",type:"Reel",likesCount:160,commentsCount:7,videoViewCount:3600,url:"#",caption:"experimental entry #ECDREMIX2026",timestamp:day(17)},
+    {ownerUsername:"wonk.unit",type:"Video",likesCount:110,commentsCount:5,videoViewCount:2100,url:"#",caption:"wonky flip #ECDREMIX2026",timestamp:day(18)},
+    {ownerUsername:"midnight.fm",type:"Image",likesCount:90,commentsCount:4,videoViewCount:0,url:"#",caption:"quick bootleg done #ECDREMIX2026",timestamp:day(19)},
+    {ownerUsername:"freshcut",type:"Reel",likesCount:120,commentsCount:6,videoViewCount:2800,url:"#",caption:"first remix ever!! #ECDREMIX2026",timestamp:day(21)},
+    {ownerUsername:"raveghost",type:"Video",likesCount:80,commentsCount:3,videoViewCount:1500,url:"#",caption:"hardcore edit #ECDREMIX2026",timestamp:day(23)},
+    {ownerUsername:"teacup.bass",type:"Image",likesCount:60,commentsCount:2,videoViewCount:0,url:"#",caption:"lofi chill remix art #ECDREMIX2026",timestamp:day(24)}
+  ],
+  tiktok: [
+    {text:"my @subtronics remix is out 🔊 #ECDREMIX2026 #dubstep",authorMeta:{name:"wubzilla"},webVideoUrl:"#",playCount:128000,diggCount:14200,shareCount:2100,commentCount:880,createTimeISO:day(2)},
+    {text:"POV: you entered the bass remix contest #ECDREMIX2026",authorMeta:{name:"neurovoid"},webVideoUrl:"#",playCount:64300,diggCount:7100,shareCount:980,commentCount:420,createTimeISO:day(3)},
+    {text:"15 sec of my flip 👀 #ECDREMIX2026 #riddim",authorMeta:{name:"bass_gremlin"},webVideoUrl:"#",playCount:41200,diggCount:4600,shareCount:610,commentCount:290,createTimeISO:day(4)},
+    {text:"studio cook-up for #ECDREMIX2026",authorMeta:{name:"halcyon.dub"},webVideoUrl:"#",playCount:28800,diggCount:3100,shareCount:410,commentCount:180,createTimeISO:day(5)},
+    {text:"this drop tho 🤯 #ECDREMIX2026",authorMeta:{name:"vexlr"},webVideoUrl:"#",playCount:19400,diggCount:2200,shareCount:300,commentCount:140,createTimeISO:day(7)},
+    {text:"tearout mix preview #ECDREMIX2026 #tearout",authorMeta:{name:"sub.morph"},webVideoUrl:"#",playCount:12100,diggCount:1400,shareCount:190,commentCount:88,createTimeISO:day(8)},
+    {text:"melodic side of the comp 🎶 #ECDREMIX2026",authorMeta:{name:"auroral"},webVideoUrl:"#",playCount:8800,diggCount:990,shareCount:120,commentCount:61,createTimeISO:day(11)},
+    {text:"first ever remix lets go #ECDREMIX2026",authorMeta:{name:"freshcut"},webVideoUrl:"#",playCount:5400,diggCount:610,shareCount:74,commentCount:38,createTimeISO:day(15)},
+    {text:"experimental wonky entry #ECDREMIX2026",authorMeta:{name:"glitchmonk"},webVideoUrl:"#",playCount:3200,diggCount:360,shareCount:41,commentCount:22,createTimeISO:day(18)},
+    {text:"quick bootleg for the contest #ECDREMIX2026",authorMeta:{name:"midnight.fm"},webVideoUrl:"#",playCount:1900,diggCount:210,shareCount:24,commentCount:13,createTimeISO:day(21)}
+  ],
+  x: [
+    {text:"my @subtronics remix dropped 🔊 go vote #ECDREMIX2026",author:{userName:"wubzilla"},url:"#",likeCount:540,retweetCount:120,replyCount:44,viewCount:18400,createdAt:day(2)},
+    {text:"the #ECDREMIX2026 entries are getting unreal",author:{userName:"bassheadnews"},url:"#",likeCount:880,retweetCount:210,replyCount:66,viewCount:31200,createdAt:day(4)},
+    {text:"submitted my flip!! wish me luck #ECDREMIX2026",author:{userName:"neurovoid"},url:"#",likeCount:210,retweetCount:38,replyCount:19,viewCount:6400,createdAt:day(3)},
+    {text:"this riddim remix for #ECDREMIX2026 is filthy",author:{userName:"vexlr"},url:"#",likeCount:160,retweetCount:29,replyCount:12,viewCount:4100,createdAt:day(7)},
+    {text:"final hours to enter #ECDREMIX2026 🎛️",author:{userName:"halcyon.dub"},url:"#",likeCount:120,retweetCount:22,replyCount:8,viewCount:3300,createdAt:day(10)},
+    {text:"melodic dubstep entry up now #ECDREMIX2026",author:{userName:"auroral"},url:"#",likeCount:88,retweetCount:14,replyCount:6,viewCount:2100,createdAt:day(11)},
+    {text:"first remix ever, be kind 😅 #ECDREMIX2026",author:{userName:"freshcut"},url:"#",likeCount:64,retweetCount:9,replyCount:5,viewCount:1500,createdAt:day(15)}
+  ],
+  youtube: [
+    {title:"Subtronics - Scream Saver (Wubzilla Remix) #ECDREMIX2026",channelName:"Wubzilla",url:"#",viewCount:24800,likes:1860,commentsCount:142,date:day(2),text:"my official entry for #ECDREMIX2026"},
+    {title:"SCREAM SAVER REMIX | #ECDREMIX2026 Contest Entry",channelName:"NEUROVOID",url:"#",viewCount:11200,likes:840,commentsCount:71,date:day(4),text:"contest submission #ECDREMIX2026"},
+    {title:"Scream Saver (Halcyon Dub Edit)",channelName:"Halcyon Dub",url:"#",viewCount:6300,likes:470,commentsCount:38,date:day(6),text:"entering the bass comp — #ECDREMIX2026"},
+    {title:"my melodic dubstep remix [#ECDREMIX2026]",channelName:"Auroral",url:"#",viewCount:3100,likes:240,commentsCount:19,date:day(11),text:"#ECDREMIX2026 #melodicdubstep"},
+    {title:"SCREAM SAVER tearout flip",channelName:"Sub Morph",url:"#",viewCount:1800,likes:130,commentsCount:11,date:day(8),text:"submitting to #ECDREMIX2026 wish me luck"}
+  ]
+};
+
+/* =========================================================================
+   STATE + HELPERS
+   ========================================================================= */
+let STATE = { soundcloud:[], instagram:[], tiktok:[], x:[], youtube:[], live:{soundcloud:false,instagram:false,tiktok:false,x:false,youtube:false} };
+const charts = {};
+const fmt = n => n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':String(Math.round(n));
+const fmtFull = n => Math.round(n).toLocaleString('en-US');
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const dkey = s => s? new Date(s).toISOString().slice(0,10) : null;
+
+async function tryFetch(url){
+  if(!url) return null;
+  try{
+    const r = await fetch(url,{headers:{'accept':'application/json'}});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const j = await r.json();
+    return Array.isArray(j)? j : (Array.isArray(j.items)? j.items : null);
+  }catch(e){ console.warn('fetch failed for',url,e); return null; }
+}
+
+async function loadAll(){
+  const scRaw = await tryFetch(CONFIG.soundcloudUrl);
+  // Instagram can come from up to two datasets (e.g. a posts run + a reels run). Fetch both, merge, de-dupe.
+  const igParts = await Promise.all([tryFetch(CONFIG.instagramUrl), tryFetch(CONFIG.instagramUrl2)]);
+  let igRaw = igParts.filter(Boolean).flat();
+  if(igRaw.length){
+    const seen = new Set();
+    igRaw = igRaw.filter(o=>{
+      const key = o.url || o.postUrl || o.permalink || o.shortCode || o.id || JSON.stringify(o).slice(0,80);
+      if(seen.has(key)) return false; seen.add(key); return true;
+    });
+  }
+  const ttRaw = await tryFetch(CONFIG.tiktokUrl);
+  const xRaw  = await tryFetch(CONFIG.xUrl);
+  const ytRaw = await tryFetch(CONFIG.youtubeUrl);
+  STATE.live.soundcloud = !!(scRaw && scRaw.length);
+  STATE.live.instagram  = !!(igRaw && igRaw.length);
+  STATE.live.tiktok     = !!(ttRaw && ttRaw.length);
+  STATE.live.x          = !!(xRaw && xRaw.length);
+  STATE.live.youtube    = !!(ytRaw && ytRaw.length);
+  STATE.soundcloud = normSoundcloud(STATE.live.soundcloud ? scRaw : SAMPLE.soundcloud);
+  STATE.instagram  = normInstagram (STATE.live.instagram  ? igRaw : SAMPLE.instagram);
+  STATE.tiktok     = normTiktok    (STATE.live.tiktok     ? ttRaw : SAMPLE.tiktok);
+  STATE.x          = normX         (STATE.live.x          ? xRaw  : SAMPLE.x);
+  STATE.youtube    = normYoutube   (STATE.live.youtube    ? ytRaw : SAMPLE.youtube);
+  renderAll();
+  updateBadges();
+}
+
+function updateBadges(){
+  const anyLive = STATE.live.soundcloud || STATE.live.instagram || STATE.live.tiktok || STATE.live.x || STATE.live.youtube;
+  const pill = document.getElementById('srcPill');
+  const lab  = document.getElementById('srcLabel');
+  pill.classList.toggle('live', anyLive);
+  lab.textContent = anyLive
+    ? `Live · ${STATE.live.soundcloud?'SC':''}${STATE.live.soundcloud&&STATE.live.instagram?'+':''}${STATE.live.instagram?'IG':''}`
+    : 'Sample data';
+  document.getElementById('updLabel').textContent = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+}
+
+/* =========================================================================
+   KPI RENDERERS
+   ========================================================================= */
+function kpiCard({lab,val,sub,color,q}){
+  return `<div class="kpi${q?' q':''}" style="--kc:${color}">${q?`<div class="qmark" title="${q}">?</div>`:''}
+    <div class="lab">${lab}</div><div class="val">${val}</div>${sub?`<div class="sub">${sub}</div>`:''}</div>`;
+}
+function renderScKpis(){
+  const d=STATE.soundcloud;
+  const plays=d.reduce((s,x)=>s+x.plays,0), likes=d.reduce((s,x)=>s+x.likes,0),
+        reposts=d.reduce((s,x)=>s+x.reposts,0), comments=d.reduce((s,x)=>s+x.comments,0);
+  const eng=likes+reposts+comments;
+  const rate=plays? (eng/plays*100):0;
+  document.getElementById('sc-kpis').innerHTML=[
+    kpiCard({lab:'Submissions',val:fmtFull(d.length),sub:'remixes tagged',color:'var(--acid)'}),
+    kpiCard({lab:'Total plays',val:fmt(plays),sub:`<span class="up">▲</span> contest-wide`,color:'var(--cyan)'}),
+    kpiCard({lab:'Likes',val:fmt(likes),color:'var(--acid)'}),
+    kpiCard({lab:'Reposts',val:fmt(reposts),sub:'amplification',color:'var(--magenta)'}),
+    kpiCard({lab:'Comments',val:fmt(comments),color:'var(--amber)'}),
+    kpiCard({lab:'Engagement rate',val:rate.toFixed(1)+'%',sub:'eng ÷ plays',color:'var(--acid)'})
+  ].join('');
+}
+function renderIgKpis(){
+  const d=STATE.instagram;
+  const likes=d.reduce((s,x)=>s+x.likes,0), comments=d.reduce((s,x)=>s+x.comments,0);
+  const plays=d.reduce((s,x)=>s+x.plays,0);
+  const eng=likes+comments;
+  const creators=new Set(d.map(x=>x.creator)).size;
+  const reach=eng*CONFIG.estReachFactor;
+  document.getElementById('ig-kpis').innerHTML=[
+    kpiCard({lab:'Posts',val:fmtFull(d.length),sub:'tagged #ECDREMIX2026',color:'var(--magenta)'}),
+    kpiCard({lab:'Unique creators',val:fmtFull(creators),color:'var(--cyan)'}),
+    kpiCard({lab:'Total engagement',val:fmt(eng),sub:'likes + comments',color:'var(--magenta)'}),
+    kpiCard({lab:'Reel / video plays',val:fmt(plays),sub:'real, scraped',color:'var(--cyan)'}),
+    kpiCard({lab:'Est. reach',val:fmt(reach),q:`Estimate only — engagement × ${CONFIG.estReachFactor}. NOT Instagram impressions, which are not publicly available.`,sub:`est · ×${CONFIG.estReachFactor}`,color:'var(--amber)'}),
+    kpiCard({lab:'Avg eng / post',val:fmt(d.length?eng/d.length:0),color:'var(--magenta)'})
+  ].join('');
+}
+function renderTtKpis(){
+  const d=STATE.tiktok;
+  const plays=d.reduce((s,x)=>s+x.plays,0), likes=d.reduce((s,x)=>s+x.likes,0),
+        shares=d.reduce((s,x)=>s+x.shares,0), comments=d.reduce((s,x)=>s+x.comments,0);
+  const eng=likes+shares+comments;
+  const rate=plays?(eng/plays*100):0;
+  document.getElementById('tt-kpis').innerHTML=[
+    kpiCard({lab:'Verified videos',val:fmtFull(d.length),sub:`${TT_FILTERED} off-tag filtered out`,color:'var(--cyan)'}),
+    kpiCard({lab:'Total views',val:fmt(plays),sub:'real, scraped',color:'var(--cyan)'}),
+    kpiCard({lab:'Likes',val:fmt(likes),color:'var(--magenta)'}),
+    kpiCard({lab:'Shares',val:fmt(shares),sub:'amplification',color:'var(--acid)'}),
+    kpiCard({lab:'Comments',val:fmt(comments),color:'var(--amber)'}),
+    kpiCard({lab:'Engagement rate',val:rate.toFixed(1)+'%',sub:'eng ÷ views',color:'var(--cyan)'})
+  ].join('');
+}
+function renderXKpis(){
+  const d=STATE.x;
+  const likes=d.reduce((s,x)=>s+x.likes,0), rts=d.reduce((s,x)=>s+x.retweets,0),
+        replies=d.reduce((s,x)=>s+x.replies,0), views=d.reduce((s,x)=>s+x.views,0);
+  const eng=likes+rts+replies;
+  const authors=new Set(d.map(x=>x.creator)).size;
+  const reach = views>0 ? views : eng*CONFIG.estReachFactor;
+  document.getElementById('x-kpis').innerHTML=[
+    kpiCard({lab:'Verified tweets',val:fmtFull(d.length),sub:`${X_FILTERED} off-tag filtered out`,color:'var(--txt)'}),
+    kpiCard({lab:'Unique accounts',val:fmtFull(authors),color:'var(--cyan)'}),
+    kpiCard({lab:'Likes',val:fmt(likes),color:'var(--magenta)'}),
+    kpiCard({lab:'Retweets',val:fmt(rts),sub:'amplification',color:'var(--acid)'}),
+    kpiCard({lab:'Replies',val:fmt(replies),color:'var(--amber)'}),
+    kpiCard({lab:views>0?'Views':'Est. reach',val:fmt(reach),q:views>0?'Sum of tweet view counts where X exposed them.':`Estimate — engagement × ${CONFIG.estReachFactor}, used when X view counts aren't available.`,sub:views>0?'real, scraped':`est · ×${CONFIG.estReachFactor}`,color:'var(--cyan)'})
+  ].join('');
+}
+function renderYtKpis(){
+  const d=STATE.youtube;
+  const views=d.reduce((s,x)=>s+x.views,0), likes=d.reduce((s,x)=>s+x.likes,0), comments=d.reduce((s,x)=>s+x.comments,0);
+  const channels=new Set(d.map(x=>x.creator)).size;
+  const eng=likes+comments;
+  const rate=views?(eng/views*100):0;
+  document.getElementById('yt-kpis').innerHTML=[
+    kpiCard({lab:'Verified videos',val:fmtFull(d.length),sub:`${YT_FILTERED} off-tag filtered out`,color:'#ff4d4d'}),
+    kpiCard({lab:'Total views',val:fmt(views),sub:'real, scraped',color:'#ff4d4d'}),
+    kpiCard({lab:'Channels',val:fmtFull(channels),color:'var(--cyan)'}),
+    kpiCard({lab:'Likes',val:fmt(likes),color:'var(--magenta)'}),
+    kpiCard({lab:'Comments',val:fmt(comments),color:'var(--amber)'}),
+    kpiCard({lab:'Engagement rate',val:rate.toFixed(1)+'%',sub:'eng ÷ views',color:'#ff4d4d'})
+  ].join('');
+}
+
+Chart.defaults.font.family="'IBM Plex Mono', monospace";
+Chart.defaults.font.size=11;
+Chart.defaults.color=css('--muted');
+function mk(id,cfg){ if(charts[id]) charts[id].destroy(); charts[id]=new Chart(document.getElementById(id),cfg); }
+const grid={color:'rgba(120,255,214,0.07)'};
+function byDay(arr){ const m={}; arr.forEach(x=>{const k=dkey(x.date); if(k)m[k]=(m[k]||0)+1;}); return m; }
+
+function renderScCharts(){
+  const d=[...STATE.soundcloud].filter(x=>x.date).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const days=[...new Set(d.map(x=>dkey(x.date)))];
+  let cumS=0,cumP=0; const subs=[],plays=[];
+  const playByDay={}; d.forEach(x=>{const k=dkey(x.date); playByDay[k]=(playByDay[k]||0)+x.plays;});
+  days.forEach(k=>{ cumS+=d.filter(x=>dkey(x.date)===k).length; cumP+=playByDay[k]||0; subs.push(cumS); plays.push(cumP); });
+  mk('scTime',{type:'line',data:{labels:days.map(k=>k.slice(5)),datasets:[
+      {label:'Cumulative plays',data:plays,yAxisID:'y1',borderColor:css('--cyan'),backgroundColor:'rgba(56,225,255,0.10)',fill:true,tension:.35,pointRadius:0,borderWidth:2},
+      {label:'Cumulative submissions',data:subs,yAxisID:'y',borderColor:css('--acid'),backgroundColor:'transparent',tension:.35,pointRadius:0,borderWidth:2,borderDash:[5,3]}
+    ]},options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{labels:{boxWidth:10,boxHeight:10,usePointStyle:true}}},
+      scales:{x:{grid},y:{position:'left',grid,title:{display:true,text:'submissions'}},y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'plays'}}}}});
+
+  const top=[...STATE.soundcloud].sort((a,b)=>b.plays-a.plays).slice(0,8);
+  mk('scMix',{type:'bar',data:{labels:top.map(x=>'@'+x.artist),datasets:[
+      {label:'Likes',data:top.map(x=>x.likes),backgroundColor:css('--acid')},
+      {label:'Reposts',data:top.map(x=>x.reposts),backgroundColor:css('--magenta')},
+      {label:'Comments',data:top.map(x=>x.comments),backgroundColor:css('--amber')}
+    ]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:10,boxHeight:10,usePointStyle:true}}},
+      scales:{x:{stacked:true,grid:{display:false},ticks:{maxRotation:60,minRotation:45,font:{size:9}}},y:{stacked:true,grid}}}});
+
+  const bd=byDay(STATE.soundcloud); const dk=Object.keys(bd).sort();
+  mk('scDaily',{type:'bar',data:{labels:dk.map(k=>k.slice(5)),datasets:[
+      {label:'Uploads',data:dk.map(k=>bd[k]),backgroundColor:css('--acid'),borderRadius:4}
+    ]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid,ticks:{precision:0}}}}});
+}
+
+function renderIgCharts(){
+  const d=[...STATE.instagram].filter(x=>x.date).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const days=[...new Set(d.map(x=>dkey(x.date)))];
+  const postBy={},engBy={};
+  d.forEach(x=>{const k=dkey(x.date); postBy[k]=(postBy[k]||0)+1; engBy[k]=(engBy[k]||0)+x.likes+x.comments;});
+  mk('igTime',{type:'line',data:{labels:days.map(k=>k.slice(5)),datasets:[
+      {label:'Engagement',data:days.map(k=>engBy[k]||0),yAxisID:'y1',borderColor:css('--magenta'),backgroundColor:'rgba(255,61,166,0.12)',fill:true,tension:.35,pointRadius:0,borderWidth:2},
+      {label:'Posts',data:days.map(k=>postBy[k]||0),yAxisID:'y',borderColor:css('--cyan'),tension:.35,pointRadius:0,borderWidth:2,borderDash:[5,3]}
+    ]},options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{labels:{boxWidth:10,boxHeight:10,usePointStyle:true}}},
+      scales:{x:{grid},y:{position:'left',grid,title:{display:true,text:'posts'},ticks:{precision:0}},y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'engagement'}}}}});
+
+  const types=['Reel','Video','Image']; const counts=types.map(t=>STATE.instagram.filter(x=>x.type===t).length);
+  mk('igType',{type:'doughnut',data:{labels:types,datasets:[{data:counts,backgroundColor:[css('--magenta'),css('--cyan'),css('--muted')],borderColor:css('--panel'),borderWidth:3}]},
+    options:{maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'right',labels:{boxWidth:10,boxHeight:10,usePointStyle:true}}}}});
+
+  const reels=STATE.instagram.filter(x=>x.plays>0).sort((a,b)=>b.plays-a.plays).slice(0,8);
+  mk('igFormat',{type:'bar',data:{labels:reels.map(x=>'@'+x.creator),datasets:[
+      {label:'Plays',data:reels.map(x=>x.plays),backgroundColor:css('--cyan'),borderRadius:4,yAxisID:'y'},
+      {label:'Engagement',data:reels.map(x=>x.likes+x.comments),backgroundColor:css('--magenta'),borderRadius:4,yAxisID:'y1'}
+    ]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:10,boxHeight:10,usePointStyle:true}}},
+      scales:{x:{grid:{display:false},ticks:{maxRotation:60,minRotation:45,font:{size:9}}},y:{grid,title:{display:true,text:'plays'}},y1:{position:'right',grid:{drawOnChartArea:false}}}}});
+}
+
+function renderTtCharts(){
+  const d=[...STATE.tiktok].filter(x=>x.date).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const days=[...new Set(d.map(x=>dkey(x.date)))];
+  let cumV=0,cumP=0; const vids=[],views=[];
+  const viewByDay={}; d.forEach(x=>{const k=dkey(x.date); viewByDay[k]=(viewByDay[k]||0)+x.plays;});
+  days.forEach(k=>{ cumV+=d.filter(x=>dkey(x.date)===k).length; cumP+=viewByDay[k]||0; vids.push(cumV); views.push(cumP); });
+  mk('ttTime',{type:'line',data:{labels:days.map(k=>k.slice(5)),datasets:[
+      {label:'Cumulative views',data:views,yAxisID:'y1',borderColor:css('--cyan'),backgroundColor:'rgba(56,225,255,0.10)',fill:true,tension:.35,pointRadius:0,borderWidth:2},
+      {label:'Cumulative videos',data:vids,yAxisID:'y',borderColor:css('--acid'),tension:.35,pointRadius:0,borderWidth:2,borderDash:[5,3]}
+    ]},options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{labels:{boxWidth:10,boxHeight:10,usePointStyle:true}}},
+      scales:{x:{grid},y:{position:'left',grid,title:{display:true,text:'videos'},ticks:{precision:0}},y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'views'}}}}});
+
+  const top=[...STATE.tiktok].sort((a,b)=>b.plays-a.plays).slice(0,8);
+  mk('ttMix',{type:'bar',data:{labels:top.map(x=>'@'+x.creator),datasets:[
+      {label:'Likes',data:top.map(x=>x.likes),backgroundColor:css('--magenta')},
+      {label:'Shares',data:top.map(x=>x.shares),backgroundColor:css('--acid')},
+      {label:'Comments',data:top.map(x=>x.comments),backgroundColor:css('--amber')}
+    ]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:10,boxHeight:10,usePointStyle:true}}},
+      scales:{x:{stacked:true,grid:{display:false},ticks:{maxRotation:60,minRotation:45,font:{size:9}}},y:{stacked:true,grid}}}});
+
+  const bd={}; STATE.tiktok.forEach(x=>{const k=dkey(x.date); if(k)bd[k]=(bd[k]||0)+1;}); const dk=Object.keys(bd).sort();
+  mk('ttDaily',{type:'bar',data:{labels:dk.map(k=>k.slice(5)),datasets:[
+      {label:'Videos',data:dk.map(k=>bd[k]),backgroundColor:css('--cyan'),borderRadius:4}
+    ]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid,ticks:{precision:0}}}}});
+}
+
+function renderXCharts(){
+  const d=[...STATE.x].filter(x=>x.date).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const days=[...new Set(d.map(x=>dkey(x.date)))];
+  const postBy={},engBy={};
+  d.forEach(x=>{const k=dkey(x.date); postBy[k]=(postBy[k]||0)+1; engBy[k]=(engBy[k]||0)+x.likes+x.retweets+x.replies;});
+  mk('xTime',{type:'line',data:{labels:days.map(k=>k.slice(5)),datasets:[
+      {label:'Engagement',data:days.map(k=>engBy[k]||0),yAxisID:'y1',borderColor:css('--cyan'),backgroundColor:'rgba(56,225,255,0.10)',fill:true,tension:.35,pointRadius:0,borderWidth:2},
+      {label:'Tweets',data:days.map(k=>postBy[k]||0),yAxisID:'y',borderColor:css('--txt'),tension:.35,pointRadius:0,borderWidth:2,borderDash:[5,3]}
+    ]},options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{labels:{boxWidth:10,boxHeight:10,usePointStyle:true}}},
+      scales:{x:{grid},y:{position:'left',grid,title:{display:true,text:'tweets'},ticks:{precision:0}},y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'engagement'}}}}});
+
+  const top=[...STATE.x].sort((a,b)=>(b.likes+b.retweets+b.replies)-(a.likes+a.retweets+a.replies)).slice(0,8);
+  mk('xMix',{type:'bar',data:{labels:top.map(x=>'@'+x.creator),datasets:[
+      {label:'Likes',data:top.map(x=>x.likes),backgroundColor:css('--magenta')},
+      {label:'Retweets',data:top.map(x=>x.retweets),backgroundColor:css('--acid')},
+      {label:'Replies',data:top.map(x=>x.replies),backgroundColor:css('--amber')}
+    ]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:10,boxHeight:10,usePointStyle:true}}},
+      scales:{x:{stacked:true,grid:{display:false},ticks:{maxRotation:60,minRotation:45,font:{size:9}}},y:{stacked:true,grid}}}});
+
+  const bd={}; STATE.x.forEach(x=>{const k=dkey(x.date); if(k)bd[k]=(bd[k]||0)+1;}); const dk=Object.keys(bd).sort();
+  mk('xDaily',{type:'bar',data:{labels:dk.map(k=>k.slice(5)),datasets:[
+      {label:'Tweets',data:dk.map(k=>bd[k]),backgroundColor:css('--txt'),borderRadius:4}
+    ]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid,ticks:{precision:0}}}}});
+}
+
+function renderYtCharts(){
+  const d=[...STATE.youtube].filter(x=>x.date).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const days=[...new Set(d.map(x=>dkey(x.date)))];
+  let cumV=0,cumP=0; const vids=[],views=[];
+  const viewByDay={}; d.forEach(x=>{const k=dkey(x.date); viewByDay[k]=(viewByDay[k]||0)+x.views;});
+  days.forEach(k=>{ cumV+=d.filter(x=>dkey(x.date)===k).length; cumP+=viewByDay[k]||0; vids.push(cumV); views.push(cumP); });
+  mk('ytTime',{type:'line',data:{labels:days.map(k=>k.slice(5)),datasets:[
+      {label:'Cumulative views',data:views,yAxisID:'y1',borderColor:'#ff4d4d',backgroundColor:'rgba(255,77,77,0.10)',fill:true,tension:.35,pointRadius:0,borderWidth:2},
+      {label:'Cumulative uploads',data:vids,yAxisID:'y',borderColor:css('--acid'),tension:.35,pointRadius:0,borderWidth:2,borderDash:[5,3]}
+    ]},options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{labels:{boxWidth:10,boxHeight:10,usePointStyle:true}}},
+      scales:{x:{grid},y:{position:'left',grid,title:{display:true,text:'uploads'},ticks:{precision:0}},y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'views'}}}}});
+
+  const top=[...STATE.youtube].sort((a,b)=>b.views-a.views).slice(0,8);
+  mk('ytMix',{type:'bar',data:{labels:top.map(x=>x.creator.slice(0,14)),datasets:[
+      {label:'Likes',data:top.map(x=>x.likes),backgroundColor:'#ff4d4d',borderRadius:4},
+      {label:'Comments',data:top.map(x=>x.comments),backgroundColor:css('--amber'),borderRadius:4}
+    ]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:10,boxHeight:10,usePointStyle:true}}},
+      scales:{x:{grid:{display:false},ticks:{maxRotation:60,minRotation:45,font:{size:9}}},y:{grid}}}});
+
+  const bd={}; STATE.youtube.forEach(x=>{const k=dkey(x.date); if(k)bd[k]=(bd[k]||0)+1;}); const dk=Object.keys(bd).sort();
+  mk('ytDaily',{type:'bar',data:{labels:dk.map(k=>k.slice(5)),datasets:[
+      {label:'Uploads',data:dk.map(k=>bd[k]),backgroundColor:'#ff4d4d',borderRadius:4}
+    ]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid,ticks:{precision:0}}}}});
+}
+
+/* =========================================================================
+   LEADERBOARDS
+   ========================================================================= */
+function renderScLead(){
+  const top=[...STATE.soundcloud].sort((a,b)=>b.plays-a.plays).slice(0,8);
+  document.getElementById('scLead').innerHTML=top.map((x,i)=>`
+    <div class="row"><div class="rank">${i+1}</div>
+      <div class="meta"><div class="t">${x.title.replace(/#ECDREMIX2026/ig,'').trim()||x.title}</div><div class="a">@${x.artist}</div></div>
+      <div class="stat">${fmt(x.plays)}<span>plays</span></div></div>`).join('');
+}
+function renderIgLead(){
+  const top=[...STATE.instagram].map(x=>({...x,eng:x.likes+x.comments})).sort((a,b)=>b.eng-a.eng).slice(0,8);
+  document.getElementById('igLead').innerHTML=top.map((x,i)=>`
+    <div class="row"><div class="rank">${i+1}</div>
+      <div class="meta"><div class="t">@${x.creator}</div><div class="a">${x.type} · ${(x.caption||'').slice(0,40)}</div></div>
+      <div class="stat" style="color:var(--magenta)">${fmt(x.eng)}<span>eng</span></div></div>`).join('');
+}
+function renderTtLead(){
+  const top=[...STATE.tiktok].sort((a,b)=>b.plays-a.plays).slice(0,8);
+  document.getElementById('ttLead').innerHTML=top.map((x,i)=>`
+    <div class="row"><div class="rank">${i+1}</div>
+      <div class="meta"><div class="t">@${x.creator}</div><div class="a">${(x.caption||'').replace(/#ECDREMIX2026/ig,'').trim().slice(0,46)}</div></div>
+      <div class="stat" style="color:var(--cyan)">${fmt(x.plays)}<span>views</span></div></div>`).join('');
+}
+function renderXLead(){
+  const top=[...STATE.x].map(x=>({...x,eng:x.likes+x.retweets+x.replies})).sort((a,b)=>b.eng-a.eng).slice(0,8);
+  document.getElementById('xLead').innerHTML=top.map((x,i)=>`
+    <div class="row"><div class="rank">${i+1}</div>
+      <div class="meta"><div class="t">@${x.creator}</div><div class="a">${(x.caption||'').replace(/#ECDREMIX2026/ig,'').trim().slice(0,46)}</div></div>
+      <div class="stat" style="color:var(--txt)">${fmt(x.eng)}<span>eng</span></div></div>`).join('');
+}
+function renderYtLead(){
+  const top=[...STATE.youtube].sort((a,b)=>b.views-a.views).slice(0,8);
+  document.getElementById('ytLead').innerHTML=top.map((x,i)=>`
+    <div class="row"><div class="rank">${i+1}</div>
+      <div class="meta"><div class="t">${(x.title||'').replace(/#ECDREMIX2026/ig,'').trim().slice(0,46)}</div><div class="a">${x.creator}</div></div>
+      <div class="stat" style="color:#ff4d4d">${fmt(x.views)}<span>views</span></div></div>`).join('');
+}
+
+/* =========================================================================
+   SORTABLE TABLES
+   ========================================================================= */
+const scCols=[['title','Track','txt'],['artist','Artist','txt'],['plays','Plays','num'],['likes','Likes','num'],['reposts','Reposts','num'],['comments','Comments','num'],['date','Uploaded','txt']];
+const igCols=[['creator','Creator','txt'],['type','Type','txt'],['likes','Likes','num'],['comments','Comments','num'],['plays','Plays','num'],['date','Posted','txt']];
+const ttCols=[['creator','Creator','txt'],['caption','Caption','txt'],['plays','Views','num'],['likes','Likes','num'],['shares','Shares','num'],['comments','Comments','num'],['date','Posted','txt']];
+const xCols=[['creator','Account','txt'],['caption','Tweet','txt'],['likes','Likes','num'],['retweets','Retweets','num'],['replies','Replies','num'],['views','Views','num'],['date','Posted','txt']];
+const ytCols=[['title','Video','txt'],['creator','Channel','txt'],['views','Views','num'],['likes','Likes','num'],['comments','Comments','num'],['date','Uploaded','txt']];
+let scSort={k:'plays',dir:-1}, igSort={k:'likes',dir:-1}, ttSort={k:'plays',dir:-1}, xSort={k:'likes',dir:-1}, ytSort={k:'views',dir:-1};
+
+function buildTable(tableId,cols,data,sort,which){
+  const t=document.getElementById(tableId);
+  t.querySelector('thead').innerHTML='<tr>'+cols.map(c=>`<th class="${c[2]==='num'?'num':''}" data-k="${c[0]}">${c[1]}${sort.k===c[0]?(sort.dir<0?' ↓':' ↑'):''}</th>`).join('')+'</tr>';
+  const rows=[...data].sort((a,b)=>{const A=a[sort.k],B=b[sort.k];return (A<B?-1:A>B?1:0)*sort.dir;});
+  t.querySelector('tbody').innerHTML=rows.map(r=>{
+    if(which==='sc') return `<tr><td class="tname">${r.url&&r.url!=='#'?`<a href="${r.url}" target="_blank" rel="noopener">${r.title}</a>`:r.title}</td>
+      <td>@${r.artist}</td><td class="num">${fmtFull(r.plays)}</td><td class="num">${fmtFull(r.likes)}</td><td class="num">${fmtFull(r.reposts)}</td><td class="num">${fmtFull(r.comments)}</td><td>${(r.date||'').slice(0,10)}</td></tr>`;
+    if(which==='tt') return `<tr><td>@${r.creator}</td><td class="tname">${r.url&&r.url!=='#'?`<a href="${r.url}" target="_blank" rel="noopener">${(r.caption||'').slice(0,50)}</a>`:(r.caption||'').slice(0,50)}</td>
+      <td class="num">${fmtFull(r.plays)}</td><td class="num">${fmtFull(r.likes)}</td><td class="num">${fmtFull(r.shares)}</td><td class="num">${fmtFull(r.comments)}</td><td>${(r.date||'').slice(0,10)}</td></tr>`;
+    if(which==='x') return `<tr><td>@${r.creator}</td><td class="tname">${r.url&&r.url!=='#'?`<a href="${r.url}" target="_blank" rel="noopener">${(r.caption||'').slice(0,50)}</a>`:(r.caption||'').slice(0,50)}</td>
+      <td class="num">${fmtFull(r.likes)}</td><td class="num">${fmtFull(r.retweets)}</td><td class="num">${fmtFull(r.replies)}</td><td class="num">${r.views?fmtFull(r.views):'—'}</td><td>${(r.date||'').slice(0,10)}</td></tr>`;
+    if(which==='yt') return `<tr><td class="tname">${r.url&&r.url!=='#'?`<a href="${r.url}" target="_blank" rel="noopener">${r.title}</a>`:r.title}</td>
+      <td>${r.creator}</td><td class="num">${fmtFull(r.views)}</td><td class="num">${fmtFull(r.likes)}</td><td class="num">${fmtFull(r.comments)}</td><td>${(r.date||'').slice(0,10)}</td></tr>`;
+    return `<tr><td>@${r.creator}</td><td><span class="badge ${r.type.toLowerCase()}">${r.type}</span></td>
+      <td class="num">${fmtFull(r.likes)}</td><td class="num">${fmtFull(r.comments)}</td><td class="num">${r.plays?fmtFull(r.plays):'—'}</td><td>${(r.date||'').slice(0,10)}</td></tr>`;
+  }).join('');
+  t.querySelectorAll('th').forEach(th=>th.onclick=()=>{const k=th.dataset.k; if(sort.k===k)sort.dir*=-1; else {sort.k=k;sort.dir=-1;} buildTable(tableId,cols,data,sort,which);});
+}
+
+/* =========================================================================
+   OVERVIEW
+   ========================================================================= */
+function platformTotals(){
+  const sc=STATE.soundcloud, ig=STATE.instagram, tt=STATE.tiktok, x=STATE.x, yt=STATE.youtube;
+  const sum=(a,f)=>a.reduce((s,o)=>s+(o[f]||0),0);
+  return [
+    {key:'soundcloud',name:'SoundCloud',color:css('--acid'),posts:sc.length,
+      reach:sum(sc,'plays'),
+      engagement:sum(sc,'likes')+sum(sc,'reposts')+sum(sc,'comments'),
+      note:'The contest hub — every remix submission lives here.',
+      top:[...sc].sort((a,b)=>b.plays-a.plays)[0], topMetric:'plays', topField:'plays', topName:o=>'@'+o.artist},
+    {key:'instagram',name:'Instagram',color:css('--magenta'),posts:ig.length,
+      reach:(sum(ig,'likes')+sum(ig,'comments'))*CONFIG.estReachFactor,
+      engagement:sum(ig,'likes')+sum(ig,'comments'),
+      reachEst:true, note:'Free-tier sample (~21). Reach is an estimate.',
+      top:[...ig].map(o=>({...o,e:o.likes+o.comments})).sort((a,b)=>b.e-a.e)[0], topMetric:'eng', topField:'e', topName:o=>'@'+o.creator},
+    {key:'tiktok',name:'TikTok',color:css('--cyan'),posts:tt.length,
+      reach:sum(tt,'plays'),
+      engagement:sum(tt,'likes')+sum(tt,'shares')+sum(tt,'comments'),
+      note:`${TT_FILTERED} off-tag videos filtered out.`,
+      top:[...tt].sort((a,b)=>b.plays-a.plays)[0], topMetric:'views', topField:'plays', topName:o=>'@'+o.creator},
+    {key:'x',name:'X',color:css('--txt'),posts:x.length,
+      reach:sum(x,'views')||((sum(x,'likes')+sum(x,'retweets')+sum(x,'replies'))*CONFIG.estReachFactor),
+      engagement:sum(x,'likes')+sum(x,'retweets')+sum(x,'replies'),
+      reachEst:sum(x,'views')===0, note:`${X_FILTERED} off-tag tweets filtered out.`,
+      top:[...x].map(o=>({...o,e:o.likes+o.retweets+o.replies})).sort((a,b)=>b.e-a.e)[0], topMetric:'eng', topField:'e', topName:o=>'@'+o.creator},
+    {key:'youtube',name:'YouTube',color:'#ff4d4d',posts:yt.length,
+      reach:sum(yt,'views'),
+      engagement:sum(yt,'likes')+sum(yt,'comments'),
+      note:`${YT_FILTERED} off-tag videos filtered out.`,
+      top:[...yt].sort((a,b)=>b.views-a.views)[0], topMetric:'views', topField:'views', topName:o=>o.creator}
+  ];
+}
+function renderOverview(){
+  const P=platformTotals();
+  const totPosts=P.reduce((s,p)=>s+p.posts,0);
+  const totReach=P.reduce((s,p)=>s+p.reach,0);
+  const totEng=P.reduce((s,p)=>s+p.engagement,0);
+  document.getElementById('ov-kpis').innerHTML=[
+    kpiCard({lab:'Total submissions',val:fmtFull(STATE.soundcloud.length),sub:'SoundCloud tracks',color:'var(--acid)'}),
+    kpiCard({lab:'Total posts (all)',val:fmtFull(totPosts),sub:'across 5 platforms',color:'var(--cyan)'}),
+    kpiCard({lab:'Total reach',val:fmt(totReach),q:'Sum of real views/plays where platforms expose them, plus an engagement-based estimate for Instagram. Not "impressions" — no platform publishes those.',sub:'views + est.',color:'var(--amber)'}),
+    kpiCard({lab:'Total engagement',val:fmt(totEng),sub:'likes/reposts/shares/replies/comments',color:'var(--magenta)'}),
+    kpiCard({lab:'Platforms active',val:'5',sub:'Reddit: no activity',color:'var(--acid)'}),
+    kpiCard({lab:'Top platform',val:[...P].sort((a,b)=>b.reach-a.reach)[0].name,sub:'by reach',color:'var(--cyan)'})
+  ].join('');
+
+  const metrics=[['Reach','reach'],['Engagement','engagement'],['Posts','posts']];
+  document.getElementById('ovShare').innerHTML=metrics.map(([label,f])=>{
+    const tot=P.reduce((s,p)=>s+p[f],0)||1;
+    const ranked=[...P].sort((a,b)=>b[f]-a[f]);
+    const leader=ranked[0];
+    const share=(leader[f]/tot*100);
+    const segs=ranked.map(p=>`<span style="width:${(p[f]/tot*100).toFixed(1)}%;background:${p.color}"></span>`).join('');
+    return `<div class="ov-metric">
+      <div class="top"><span class="ml">${label}</span><span class="mv">${fmt(tot)}</span></div>
+      <div class="ov-bar">${segs}</div>
+      <div class="lead-plat"><b>${leader.name}</b> drives ${share.toFixed(0)}% of total ${label.toLowerCase()}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('ovLegend').innerHTML=P.map(p=>`<span><i style="background:${p.color}"></i>${p.name}</span>`).join('');
+
+  const ranked=[...P].sort((a,b)=>b.reach-a.reach);
+  mk('ovReach',{type:'bar',data:{labels:ranked.map(p=>p.name),datasets:[{data:ranked.map(p=>p.reach),
+      backgroundColor:ranked.map(p=>p.color),borderRadius:5}]},
+    options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:c=>fmtFull(c.raw)+(ranked[c.dataIndex].reachEst?' (incl. estimate)':'')}}},
+      scales:{x:{grid,ticks:{callback:v=>fmt(v)}},y:{grid:{display:false}}}}});
+
+  let strip=P.map(p=>{
+    const t=p.top;
+    const notable = t ? `<div class="notable"><b>Top:</b> ${p.topName(t)} — ${fmt(t[p.topField]||0)} ${p.topMetric}</div>` : '';
+    return `<div class="plat-card" style="--pc:${p.color}">
+      <h4>${p.name}</h4>
+      <div class="st">${p.note}</div>
+      <div class="pstats">
+        <div><span>${fmtFull(p.posts)}</span><small>posts</small></div>
+        <div><span>${fmt(p.reach)}</span><small>reach${p.reachEst?' (est)':''}</small></div>
+        <div><span>${fmt(p.engagement)}</span><small>engagement</small></div>
+      </div>${notable}</div>`;
+  }).join('');
+  strip += `<div class="plat-card quiet" style="--pc:var(--muted)">
+      <h4>Reddit</h4><div class="st">Monitored · no activity</div>
+      <div class="pstats"><div><span>0</span><small>posts</small></div></div>
+      <div class="notable">Sitewide search and manual check found no #ECDREMIX2026 discussion. Hashtags aren't a Reddit convention; will re-check if chatter appears.</div></div>`;
+  document.getElementById('ovStrip').innerHTML=strip;
+}
+
+/* =========================================================================
+   MASTER RENDER
+   ========================================================================= */
+function renderAll(){
+  renderOverview();
+  renderScKpis(); renderIgKpis(); renderTtKpis(); renderXKpis(); renderYtKpis();
+  renderScCharts(); renderIgCharts(); renderTtCharts(); renderXCharts(); renderYtCharts();
+  renderScLead(); renderIgLead(); renderTtLead(); renderXLead(); renderYtLead();
+  buildTable('scTable',scCols,STATE.soundcloud,scSort,'sc');
+  buildTable('igTable',igCols,STATE.instagram,igSort,'ig');
+  buildTable('ttTable',ttCols,STATE.tiktok,ttSort,'tt');
+  buildTable('xTable',xCols,STATE.x,xSort,'x');
+  buildTable('ytTable',ytCols,STATE.youtube,ytSort,'yt');
+  document.getElementById('scCount').textContent=STATE.soundcloud.length+' tracks';
+  document.getElementById('igCount').textContent=STATE.instagram.length+' posts';
+  document.getElementById('ttCount').textContent=STATE.tiktok.length+' verified · '+TT_FILTERED+' filtered';
+  document.getElementById('xCount').textContent=STATE.x.length+' verified · '+X_FILTERED+' filtered';
+  document.getElementById('ytCount').textContent=STATE.youtube.length+' verified · '+YT_FILTERED+' filtered';
+}
+
+/* =========================================================================
+   UI WIRING
+   ========================================================================= */
+document.querySelectorAll('.tab').forEach(tab=>tab.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  tab.classList.add('active');
+  document.getElementById('view-'+tab.dataset.tab).classList.add('active');
+});
+const overlay=document.getElementById('overlay');
+function openCfg(){ document.getElementById('cfgSc').value=CONFIG.soundcloudUrl; document.getElementById('cfgIg').value=CONFIG.instagramUrl; document.getElementById('cfgIg2').value=CONFIG.instagramUrl2; document.getElementById('cfgFactor').value=CONFIG.estReachFactor; overlay.classList.add('show'); }
+document.getElementById('openCfg').onclick=openCfg;
+document.getElementById('howto').onclick=e=>{e.preventDefault();openCfg();};
+document.getElementById('cfgCancel').onclick=()=>overlay.classList.remove('show');
+overlay.onclick=e=>{if(e.target===overlay)overlay.classList.remove('show');};
+document.getElementById('refreshBtn').onclick=loadAll;
+document.getElementById('cfgSave').onclick=async()=>{
+  CONFIG.soundcloudUrl=document.getElementById('cfgSc').value.trim();
+  CONFIG.instagramUrl =document.getElementById('cfgIg').value.trim();
+  CONFIG.instagramUrl2=document.getElementById('cfgIg2').value.trim();
+  const f=parseFloat(document.getElementById('cfgFactor').value); if(!isNaN(f)&&f>0)CONFIG.estReachFactor=f;
+  const raw=document.getElementById('cfgJson').value.trim();
+  overlay.classList.remove('show');
+  if(raw){
+    try{
+      const j=JSON.parse(raw);
+      if(j.soundcloud){STATE.soundcloud=normSoundcloud(j.soundcloud);STATE.live.soundcloud=true;}
+      if(j.instagram){STATE.instagram=normInstagram(j.instagram);STATE.live.instagram=true;}
+      renderAll(); updateBadges(); return;
+    }catch(err){ alert('Could not parse JSON: '+err.message); }
+  }
+  loadAll();
+};
+
+loadAll();
+</script>
+</body>
+</html>
